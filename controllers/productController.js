@@ -154,9 +154,11 @@ exports.addReview = BigPromise(async (req, res, next) => {
   const alreadyReviewed = await product.reviews.find(
     (rev) => rev.user.toString() === req.user._id.toString()
   );
+  console.log(alreadyReviewed);
   if (alreadyReviewed) {
     product.reviews.forEach((review) => {
-      if (review.user.toString() === review.user._id.toString()) {
+      if (review.user.toString() === req.user._id.toString()) {
+        console.log(review.user.toString() + "  " + req.user._id.toString());
         review.comment = comment;
         review.rating = rating;
       }
@@ -182,6 +184,7 @@ exports.addReview = BigPromise(async (req, res, next) => {
     sucess: true,
   });
 });
+
 exports.deleteReview = BigPromise(async (req, res, next) => {
   const { productId } = req.query;
   const product = await Product.findById(productId);

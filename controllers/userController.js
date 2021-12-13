@@ -7,8 +7,11 @@ const cloudinary = require("cloudinary");
 const mailHelper = require("../utils/emailHelper");
 const crypto = require("crypto");
 const user = require("../models/user");
-const { findById } = require("../models/user");
+const getToken = require("../utils/genrateToken");
+const logger = require("../logger/logger");
+
 exports.signup = BigPromise(async (req, res, next) => {
+  // console.log(req.body);
   const { name, email, password } = req.body;
   if (!email || !name || !password) {
     return next(new CustomError("Name ,Email,Password are required", 400));
@@ -22,6 +25,7 @@ exports.signup = BigPromise(async (req, res, next) => {
       crop: "scale",
     });
   }
+  const verfication_token = getToken();
 
   const user = await User.create({
     name,
@@ -31,7 +35,28 @@ exports.signup = BigPromise(async (req, res, next) => {
       id: result.public_id,
       secure_url: result.secure_url,
     },
+    verfication_token,
   });
+
+  //send token to verify email
+
+  const myurl = `${req.protocol}://${req.get("host")}/api/v1/verify/${
+    user._id
+  }/${verfication_token}`;
+  const message = `Hi ${user.name}\n\nplease  click below link to verify\n\n ${myurl}`;
+
+  try {
+    await mailHelper({
+      email: user.email,
+      subject: "EMAIL VERIFICATION FOR T_Shirt_Store ",
+      text: message,
+    });
+    logger("info", `email verfication link failed for  [${email}]`);
+  } catch (e) {
+    logger("error", "email verfication link failed for" + email);
+  }
+  console.log(myurl);
+
   cookieToken(user, res);
 });
 
@@ -49,7 +74,8 @@ exports.login = BigPromise(async (req, res, next) => {
   if (!isPasswordCorrect) {
     return next(new CustomError("password not matched  !!!", 400));
   }
-  cookieToken(user, res);
+  cookieToken(user, res, req);
+  logger("info", `user loggged  [${email}]`);
 });
 
 exports.logout = BigPromise(async (req, res, next) => {
@@ -61,6 +87,17 @@ exports.logout = BigPromise(async (req, res, next) => {
     sucess: true,
     message: "LOgout sucess",
   });
+});
+exports.verifyEmail = BigPromise(async (req, res, next) => {
+  const { userId, token } = req.params;
+  const user = await User.findById(userId);
+  if (user.verfication_token == token) {
+    user.verfied = true;
+    user.verfication_token = undefined;
+    await user.save();
+    return res.status(200).send("USER verfied ");
+  }
+  return next(new CustomError("user not verfied   !!!", 400));
 });
 exports.forgotPassword = BigPromise(async (req, res, next) => {
   const { email } = req.body;

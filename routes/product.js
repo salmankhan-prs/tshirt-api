@@ -11,7 +11,7 @@ const {
   deleteReview,
   getOnlyReviewsForOneProduct,
 } = require("../controllers/productController");
-const { isLoggedIn } = require("../middlewares/user");
+const { isLoggedIn, customRole } = require("../middlewares/user");
 router.route("/testproduct").get(testProduct);
 router.route("/product").get(getAllProduct);
 router.route("/oneproduct/:id").get(getOneProduct);
@@ -22,7 +22,9 @@ router.route("/review").get(getOnlyReviewsForOneProduct);
 //TODO: by own remove after
 
 //admin controller
-router.route("/admin/product/add").post(isLoggedIn, addProduct);
+router
+  .route("/admin/product/add")
+  .post(isLoggedIn, customRole("admin"), addProduct);
 router.route("/admin/product/:id").put(isLoggedIn, adminUpdateOneProduct);
 router.route("/admin/product/:id").delete(isLoggedIn, adminDeleteOneProduct);
 

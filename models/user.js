@@ -35,6 +35,13 @@ const userSchema = new mongoose.Schema({
   },
   forgotPasswordToken: String,
   forgotPasswordExpiry: Date,
+  verfied: {
+    type: Boolean,
+    default: false,
+  },
+  verfication_token: {
+    type: String,
+  },
   createdAt: {
     type: Date,
     default: Date.now,
@@ -61,6 +68,7 @@ userSchema.methods.getJwtToken = function () {
     expiresIn: process.env.JWT_EXPIRY,
   });
 };
+
 userSchema.methods.getForgotPasswordToken = function () {
   //TODO: we are genrertaing token and return ito user and we are hsh i and storing it database .when we we want to valid we have to hash token and match with the database
   //Genrating the token for forgot password using crypto

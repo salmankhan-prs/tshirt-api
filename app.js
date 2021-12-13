@@ -2,6 +2,7 @@ require("dotenv").config();
 //morgaon for loggers
 //TODO: add loggers into file
 const morgan = require("morgan");
+const cors = require("cors");
 const express = require("express");
 const cookieParser = require("cookie-parser");
 const fileUpload = require("express-fileupload");
@@ -15,6 +16,7 @@ app.get("/signuptest", (req, res) => {
 
 //###################TEMP CHECK#####################
 //regular middleware
+// app.use(cors({ credentials: true }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -50,6 +52,14 @@ const user = require("./routes/user");
 const product = require("./routes/product");
 const payment = require("./routes/payment");
 const order = require("./routes/order");
+app.use("*", (req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "*");
+  res.header("Access-Control-Allow-Methods", "*");
+  res.header("access-control-expose-headers", " Set-Cookie");
+
+  next();
+});
 app.use("/api/v1", home);
 app.use("/api/v1", user);
 app.use("/api/v1", product);
