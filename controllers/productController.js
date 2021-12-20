@@ -72,7 +72,7 @@ exports.getAllProduct = BigPromise(async (req, res, next) => {
 });
 exports.getOneProduct = BigPromise(async (req, res, next) => {
   console.log("ENTER");
-  const product = await Product.findById(req.params.id);
+  const product = await Product.findById(req.params.id).populate("user");
   if (!product) {
     return next(new CustomError("No product found "), 401);
   }

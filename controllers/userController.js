@@ -14,6 +14,9 @@ exports.signup = BigPromise(async (req, res, next) => {
   // console.log(req.body);
   const { name, email, password } = req.body;
   if (!email || !name || !password) {
+    res
+      .status(400)
+      .send({ message: "name and password required ", status: 400 });
     return next(new CustomError("Name ,Email,Password are required", 400));
   }
   let result;
@@ -24,6 +27,15 @@ exports.signup = BigPromise(async (req, res, next) => {
       width: 150,
       crop: "scale",
     });
+  }
+
+  if (await User.findOne({ email })) {
+    res
+      .status(400)
+      .send({ message: " mail alredy registered  registered !!", status: 400 });
+    return next(
+      new CustomError("email alredy registered  registered !!!", 401)
+    );
   }
   const verfication_token = getToken();
 
