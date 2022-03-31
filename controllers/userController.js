@@ -17,7 +17,7 @@ exports.signup = BigPromise(async (req, res, next) => {
     res
       .status(400)
       .send({ message: "name and password required ", status: 400 });
-    logger("info", `name and password required`, req.ip);
+    logger("info", `name and password required`, req.ips);
     return next(new CustomError("Name ,Email,Password are required", 400));
   }
   let result;
@@ -64,9 +64,9 @@ exports.signup = BigPromise(async (req, res, next) => {
       subject: "EMAIL VERIFICATION FOR T_Shirt_Store ",
       text: message,
     });
-    logger("info", "email verfication link sucessfully  for " + email, req.ip);
+    logger("info", "email verfication link sucessfully  for " + email, req.ips);
   } catch (e) {
-    logger("error", "email verfication link failed for " + email, req.ip);
+    logger("error", "email verfication link failed for " + email, req.ips);
   }
   console.log(myurl);
 
@@ -88,7 +88,7 @@ exports.login = BigPromise(async (req, res, next) => {
     return next(new CustomError("password not matched  !!!", 400));
   }
   cookieToken(user, res, req);
-  logger("info", `user loggged  ${email}`, req.ip);
+  logger("info", `user loggged  ${email}`, req.ips);
 });
 
 exports.logout = BigPromise(async (req, res, next) => {
@@ -108,10 +108,10 @@ exports.verifyEmail = BigPromise(async (req, res, next) => {
     user.verfied = true;
     user.verfication_token = undefined;
     await user.save();
-    logger("info", `email verfied ${user.email}`, req.ip);
+    logger("info", `email verfied ${user.email}`, req.ips);
     return res.status(200).send("USER verfied ");
   }
-  logger("error", `email not verfied ${user.email}`, req.ip);
+  logger("error", `email not verfied ${user.email}`, req.ips);
   return next(new CustomError("user not verfied   !!!", 400));
 });
 exports.forgotPassword = BigPromise(async (req, res, next) => {
