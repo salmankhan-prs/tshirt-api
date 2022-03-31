@@ -52,6 +52,7 @@ const user = require("./routes/user");
 const product = require("./routes/product");
 const payment = require("./routes/payment");
 const order = require("./routes/order");
+const logger = require("./routes/logger");
 app.use("*", (req, res, next) => {
   res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Headers", "*");
@@ -65,4 +66,6 @@ app.use("/api/v1", user);
 app.use("/api/v1", product);
 app.use("/api/v1", payment);
 app.use("/api/v1", order);
+app.use("/api/v1", logger);
+console.log(logger);
 module.exports = app;
